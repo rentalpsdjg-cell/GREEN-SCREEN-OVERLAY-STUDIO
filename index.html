@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Screen Frame & Overlay Studio (Shorts / Reels 9:16)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@700;800;900&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif'],
+                        studio: ['Orbitron', 'sans-serif'],
+                    },
+                    colors: {
+                        studio: {
+                            950: '#07090e',
+                            900: '#0d111a',
+                            800: '#151b28',
+                            700: '#1f283b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0d111a; }
+        ::-webkit-scrollbar-thumb { background: #1f283b; border-radius: 9999px; }
+        .glass-panel {
+            background: rgba(13, 17, 26, 0.88);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .studio-glow {
+            box-shadow: 0 0 24px rgba(16, 185, 129, 0.25), 0 0 12px rgba(6, 182, 212, 0.15);
+        }
+        .checkerboard-bg {
+            background-image: linear-gradient(45deg, #181c26 25%, transparent 25%),
+                              linear-gradient(-45deg, #181c26 25%, transparent 25%),
+                              linear-gradient(45deg, transparent 75%, #181c26 75%),
+                              linear-gradient(-45deg, transparent 75%, #181c26 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+        }
+    </style>
+</head>
+<body class="bg-studio-950 text-zinc-100 min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-zinc-950">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-zinc-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 via-green-500 to-cyan-500 flex items-center justify-center studio-glow">
+                    <svg class="w-6 h-6 text-zinc-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-studio font-extrabold text-sm sm:text-lg tracking-wider bg-gradient-to-r from-white via-emerald-200 to-cyan-300 bg-clip-text text-transparent">
+                            GREEN SCREEN OVERLAY STUDIO
+                        </h1>
+                        <span class="px-1.5 py-0.5 text-[10px] font-bold rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">9:16 PRO</span>
+                    </div>
+                    <p class="text-[11px] text-zinc-400 hidden sm:block">Ganti Logo Atas, Maskot Ikon Bawah &amp; Teks Request Secara Otomatis (1080×1920 HD)</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="resetOverlayStudio()" class="px-3.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-medium text-zinc-200 border border-zinc-700 transition">
+                    Reset Default
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <!-- KIRI: KONTROL EDITOR LENGKAP (7 Kolom) -->
+            <div class="lg:col-span-7 space-y-5">
+
+                <!-- 1. BACKGROUND & BINGKAI TENGAH -->
+                <div class="glass-panel rounded-2xl p-5 space-y-4 border-t border-emerald-500/30">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-studio font-bold text-emerald-400">1. BACKGROUND GREEN SCREEN &amp; BINGKAI TENGAH</span>
+                        <span class="text-[11px] text-zinc-400">1080 × 1920 px</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs text-zinc-400 mb-1">Mode Background</label>
+                            <select id="bg-mode-select" onchange="renderCanvas()" class="w-full bg-studio-950 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                                <option value="classic_green" selected>Green Screen Standar (#1C8B38)</option>
+                                <option value="bright_chroma">Chroma Key Cerah (#00B140)</option>
+                                <option value="transparent">Transparan (PNG Overlay)</option>
+                                <option value="custom_img">Gambar Background Upload</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-zinc-400 mb-1">Upload Background Sendiri</label>
+                            <input type="file" id="bg-file-input" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'bg')">
+                            <button type="button" onclick="document.getElementById('bg-file-input').click()" class="w-full py-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-zinc-200 border border-zinc-700 transition truncate">
+                                + Pilih Gambar BG
+                            </button>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-zinc-400 mb-1">Bingkai Neon Tengah (Opsional)</label>
+                            <select id="neon-box-select" onchange="renderCanvas()" class="w-full bg-studio-950 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+                                <option value="none" selected>Tanpa Bingkai (Polos)</option>
+                                <option value="cyan_glow">Bingkai Neon Cyan (Gaya GTA V)</option>
+                                <option value="gold_glow">Bingkai Neon Emas / Oranye</option>
+                                <option value="white_clean">Bingkai Garis Putih Bersih</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. LOGO UTAMA (BAGIAN ATAS) -->
+                <div class="glass-panel rounded-2xl p-5 space-y-4 border-t border-amber-500/30">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs font-studio font-bold text-amber-400">2. LOGO UTAMA (BAGIAN ATAS / DEPAN)</span>
+                        <div class="flex items-center gap-2">
+                            <input type="file" id="top-logo-input" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'topLogo')">
+                            <button type="button" onclick="document.getElementById('top-logo-input').click()" class="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-zinc-950 font-extrabold text-xs transition shadow-md shadow-amber-500/20">
+                                + Upload Logo Atas
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <div class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                                <span>Ukuran Logo</span>
+                                <span id="top-scale-val" class="text-amber-400 font-mono">100%</span>
+                            </div>
+                            <input type="range" id="top-logo-scale" min="30" max="180" value="100" oninput="renderCanvas()" class="w-full accent-amber-500 cursor-pointer">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                                <span>Posisi Atas-Bawah (Y)</span>
+                                <span id="top-y-val" class="text-amber-400 font-mono">14%</span>
+                            </div>
+                            <input type="range" id="top-logo-y" min="3" max="45" value="14" oninput="renderCanvas()" class="w-full accent-amber-500 cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-zinc-400 mb-1">Auto Hapus Background</label>
+                            <select id="top-logo-clean" onchange="reprocessUploadedImages()" class="w-full bg-studio-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none">
+                                <option value="none" selected>Asli (PNG Transparan)</option>
+                                <option value="white">Hapus Background Putih</option>
+                                <option value="black">Hapus Background Hitam</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. IKON MASKOT BAWAH KIRI -->
+                <div class="glass-panel rounded-2xl p-5 space-y-4 border-t border-rose-500/30">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs font-studio font-bold text-rose-400">3. IKON / MASKOT BAWAH KIRI</span>
+                        <div class="flex items-center gap-2">
+                            <input type="file" id="bottom-icon-input" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'bottomIcon')">
+                            <button type="button" onclick="document.getElementById('bottom-icon-input').click()" class="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition shadow-md shadow-rose-600/20">
+                                + Upload Ikon Bawah
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <div class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                                <span>Ukuran Ikon</span>
+                                <span id="bot-scale-val" class="text-rose-400 font-mono">100%</span>
+                            </div>
+                            <input type="range" id="bot-icon-scale" min="30" max="170" value="100" oninput="renderCanvas()" class="w-full accent-rose-500 cursor-pointer">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                                <span>Posisi Bawah (Y)</span>
+                                <span id="bot-y-val" class="text-rose-400 font-mono">90%</span>
+                            </div>
+                            <input type="range" id="bot-icon-y" min="60" max="96" value="90" oninput="renderCanvas()" class="w-full accent-rose-500 cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-zinc-400 mb-1">Potong BG &amp; Teks Bawah Ikon</label>
+                            <select id="bot-icon-clean" onchange="reprocessUploadedImages()" class="w-full bg-studio-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none">
+                                <option value="black_crop_text" selected>Hapus Hitam + Potong Teks Bawah</option>
+                                <option value="black">Hapus Background Hitam Saja</option>
+                                <option value="white">Hapus Background Putih Saja</option>
+                                <option value="none">Asli (Tanpa Potong)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. TEKS BAWAH KUSTOM (AJAKAN KOMEN / REQUEST) -->
+                <div class="glass-panel rounded-2xl p-5 space-y-4 border-t border-cyan-500/30">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs font-studio font-bold text-cyan-400">4. TEKS BAWAH SESUAI KEINGINAN</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button type="button" onclick="applyTextPreset('Komen request\nkarakter bosq! 🎮')" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-[10px] text-zinc-300">Preset 1</button>
+                            <button type="button" onclick="applyTextPreset('Komen request\ngame apalagi bosq? 🔥')" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-[10px] text-zinc-300">Preset 2</button>
+                            <button type="button" onclick="applyTextPreset('Tulis jagoan kalian\ndi komentar! ⚡')" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-[10px] text-zinc-300">Preset 3</button>
+                            <button type="button" onclick="applyTextPreset('')" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-rose-600/40 text-[10px] text-rose-300">Kosongkan</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-start">
+                        <div class="sm:col-span-6">
+                            <label class="block text-xs text-zinc-400 mb-1">Isi Teks Bawah (Enter untuk baris baru)</label>
+                            <textarea id="bottom-text-input" rows="2" oninput="renderCanvas()" class="w-full bg-studio-950 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white font-bold focus:outline-none focus:border-cyan-500">Komen request
+karakter bosq! 🎮</textarea>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-xs text-zinc-400 mb-1">Ukuran Teks</label>
+                            <input type="range" id="bottom-text-size" min="32" max="92" value="58" oninput="renderCanvas()" class="w-full accent-cyan-500 cursor-pointer mt-2">
+                            <div class="text-right text-[11px] font-mono text-cyan-400 mt-1"><span id="text-size-val">58</span> px</div>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-xs text-zinc-400 mb-1">Warna &amp; Outline</label>
+                            <div class="flex items-center gap-2 mt-1">
+                                <input type="color" id="bottom-text-color" value="#ffffff" onchange="renderCanvas()" class="w-9 h-9 rounded bg-transparent border border-zinc-700 cursor-pointer" title="Warna Teks">
+                                <input type="color" id="bottom-stroke-color" value="#0a1f0f" onchange="renderCanvas()" class="w-9 h-9 rounded bg-transparent border border-zinc-700 cursor-pointer" title="Warna Outline">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- KANAN: LIVE PREVIEW 9:16 & TOMBOL UNDUH (5 Kolom) -->
+            <div class="lg:col-span-5 glass-panel rounded-2xl p-5 space-y-4 border border-emerald-500/30 sticky top-20">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-studio font-bold text-emerald-400">LIVE PREVIEW (9:16 HD)</span>
+                    <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 text-[10px] font-bold">1080 × 1920</span>
+                </div>
+
+                <!-- Canvas Container -->
+                <div class="w-full max-w-[330px] mx-auto aspect-[9/16] rounded-2xl overflow-hidden border-2 border-zinc-700 shadow-2xl checkerboard-bg relative">
+                    <canvas id="overlay-canvas" width="1080" height="1920" class="w-full h-full object-contain block"></canvas>
+                </div>
+
+                <div class="space-y-2.5 pt-1">
+                    <button type="button" onclick="downloadOverlayPng()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 via-green-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-zinc-950 font-studio font-extrabold text-xs sm:text-sm tracking-wider shadow-lg shadow-emerald-600/25 transition flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>UNDUH HASIL OVERLAY (.PNG HD)</span>
+                    </button>
+                    <p class="text-[11px] text-center text-zinc-400">Siap langsung dipakai sebagai frame/overlay di CapCut, VN, atau Premiere!</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-zinc-800 border border-zinc-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 text-sm font-medium">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+        <span id="toast-msg">Berhasil!</span>
+    </div>
+
+    <script>
+        const state = {
+            bgRawImg: null,
+            topLogoRawImg: null,
+            topLogoProcessed: null,
+            bottomIconRawImg: null,
+            bottomIconProcessed: null
+        };
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        // ==================== DEFAULT VECTOR ASSETS (PERSIS CONTOH BOSQ) ====================
+        function drawDefaultTopLogo(ctx, centerX, centerY, scale) {
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.scale(scale, scale);
+
+            // Emblem / Badge Gaming Keren Default
+            const grad = ctx.createLinearGradient(0, -70, 0, 70);
+            grad.addColorStop(0, '#fde047');
+            grad.addColorStop(0.5, '#f97316');
+            grad.addColorStop(1, '#dc2626');
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Shadow & Thick Black Outline
+            ctx.font = '900 76px "Poppins", sans-serif';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = 18;
+            ctx.strokeStyle = '#09090b';
+            ctx.strokeText('NINJA SHOWDOWN:', 0, -25);
+
+            ctx.fillStyle = grad;
+            ctx.fillText('NINJA SHOWDOWN:', 0, -25);
+
+            // Sub-title
+            ctx.font = '900 54px "Poppins", sans-serif';
+            ctx.lineWidth = 14;
+            ctx.strokeStyle = '#09090b';
+            ctx.strokeText('GRAND PRIX', 0, 48);
+
+            const subGrad = ctx.createLinearGradient(0, 20, 0, 75);
+            subGrad.addColorStop(0, '#ffffff');
+            subGrad.addColorStop(1, '#fcd34d');
+            ctx.fillStyle = subGrad;
+            ctx.fillText('GRAND PRIX', 0, 48);
+
+            ctx.restore();
+        }
+
+        function drawDefaultMascotIcon(ctx, centerX, centerY, scale) {
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.scale(scale, scale);
+
+            // Base merah joystick
+            ctx.fillStyle = '#dc2626';
+            ctx.strokeStyle = '#09090b';
+            ctx.lineWidth = 7;
+            ctx.beginPath();
+            ctx.ellipse(0, 95, 82, 24, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Batang silver joystick
+            ctx.fillStyle = '#e4e4e7';
+            ctx.beginPath();
+            ctx.moveTo(-12, 92);
+            ctx.lineTo(-7, 25);
+            ctx.lineTo(7, 25);
+            ctx.lineTo(12, 92);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Tangan kiri & kanan jempol kuning
+            function drawThumbHand(dir) {
+                ctx.save();
+                ctx.scale(dir, 1);
+                ctx.fillStyle = '#facc15';
+                ctx.strokeStyle = '#09090b';
+                ctx.lineWidth = 6;
+                // Kepalan tangan
+                ctx.beginPath();
+                ctx.roundRect(68, -22, 46, 56, 18);
+                ctx.fill();
+                ctx.stroke();
+                // Jempol ke atas
+                ctx.beginPath();
+                ctx.roundRect(72, -52, 22, 38, 11);
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+            }
+            drawThumbHand(-1);
+            drawThumbHand(1);
+
+            // Bola merah kepala maskot
+            const ballGrad = ctx.createRadialGradient(-22, -62, 10, 0, -38, 72);
+            ballGrad.addColorStop(0, '#f87171');
+            ballGrad.addColorStop(0.5, '#dc2626');
+            ballGrad.addColorStop(1, '#7f1d1d');
+            ctx.fillStyle = ballGrad;
+            ctx.beginPath();
+            ctx.arc(0, -38, 68, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Kilau bola
+            ctx.fillStyle = 'rgba(255,255,255,0.45)';
+            ctx.beginPath();
+            ctx.ellipse(-28, -74, 16, 9, -0.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Mata kartun
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.ellipse(-16, -58, 12, 18, 0.1, 0, Math.PI * 2);
+            ctx.ellipse(12, -60, 12, 18, 0.1, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#09090b';
+            ctx.beginPath();
+            ctx.arc(-13, -56, 6, 0, Math.PI * 2);
+            ctx.arc(15, -58, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Senyum lebar putih
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(-42, -32);
+            ctx.quadraticCurveTo(0, -14, 44, -40);
+            ctx.quadraticCurveTo(36, 12, -12, 8);
+            ctx.quadraticCurveTo(-40, 2, -42, -32);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        // ==================== SMART CHROMA / BG CLEANER ====================
+        function processImageChroma(img, mode) {
+            const off = document.createElement('canvas');
+            const cropBottomRatio = mode === 'black_crop_text' ? 0.84 : 1.0;
+            const srcH = Math.floor(img.height * cropBottomRatio);
+            off.width = img.width;
+            off.height = srcH;
+            const octx = off.getContext('2d');
+            octx.drawImage(img, 0, 0, img.width, srcH, 0, 0, img.width, srcH);
+
+            if (mode === 'none') return off;
+
+            const imgData = octx.getImageData(0, 0, off.width, off.height);
+            const d = imgData.data;
+
+            for (let i = 0; i < d.length; i += 4) {
+                const r = d[i], g = d[i + 1], b = d[i + 2];
+                if (mode === 'white') {
+                    const brightness = (r + g + b) / 3;
+                    if (brightness > 235) {
+                        d[i + 3] = 0;
+                    } else if (brightness > 215) {
+                        d[i + 3] = Math.round(((235 - brightness) / 20) * 255);
+                    }
+                } else if (mode === 'black' || mode === 'black_crop_text') {
+                    const maxVal = Math.max(r, g, b);
+                    if (maxVal < 38) {
+                        d[i + 3] = 0;
+                    } else if (maxVal < 62) {
+                        d[i + 3] = Math.round(((maxVal - 38) / 24) * 255);
+                    }
+                }
+            }
+            octx.putImageData(imgData, 0, 0);
+            return off;
+        }
+
+        function reprocessUploadedImages() {
+            const topCleanMode = document.getElementById('top-logo-clean').value;
+            const botCleanMode = document.getElementById('bot-icon-clean').value;
+
+            if (state.topLogoRawImg) {
+                state.topLogoProcessed = processImageChroma(state.topLogoRawImg, topCleanMode);
+            }
+            if (state.bottomIconRawImg) {
+                state.bottomIconProcessed = processImageChroma(state.bottomIconRawImg, botCleanMode);
+            }
+            renderCanvas();
+        }
+
+        function handleImageUpload(event, target) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    if (target === 'bg') {
+                        state.bgRawImg = img;
+                        document.getElementById('bg-mode-select').value = 'custom_img';
+                        showToast('Background berhasil dipasang!');
+                    } else if (target === 'topLogo') {
+                        state.topLogoRawImg = img;
+                        reprocessUploadedImages();
+                        showToast('Logo atas berhasil diganti!');
+                    } else if (target === 'bottomIcon') {
+                        state.bottomIconRawImg = img;
+                        reprocessUploadedImages();
+                        showToast('Ikon maskot bawah berhasil diganti!');
+                    }
+                    renderCanvas();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function applyTextPreset(txt) {
+            document.getElementById('bottom-text-input').value = txt;
+            renderCanvas();
+        }
+
+        // ==================== MAIN CANVAS RENDERER (1080x1920) ====================
+        function renderCanvas() {
+            const canvas = document.getElementById('overlay-canvas');
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width;   // 1080
+            const H = canvas.height;  // 1920
+
+            ctx.clearRect(0, 0, W, H);
+
+            // 1. Gambar Background
+            const bgMode = document.getElementById('bg-mode-select').value;
+            if (bgMode === 'classic_green') {
+                ctx.fillStyle = '#1d8b3a';
+                ctx.fillRect(0, 0, W, H);
+            } else if (bgMode === 'bright_chroma') {
+                ctx.fillStyle = '#00b140';
+                ctx.fillRect(0, 0, W, H);
+            } else if (bgMode === 'custom_img' && state.bgRawImg) {
+                ctx.drawImage(state.bgRawImg, 0, 0, W, H);
+            }
+
+            // 2. Bingkai Neon Tengah Opsional (Persis Contoh Gambar 3)
+            const neonMode = document.getElementById('neon-box-select').value;
+            if (neonMode !== 'none') {
+                ctx.save();
+                const boxX = 105;
+                const boxY = 620;
+                const boxW = W - 210;
+                const boxH = 490;
+                const radius = 34;
+
+                let strokeCol = '#67e8f9';
+                let glowCol = '#22d3ee';
+                if (neonMode === 'gold_glow') {
+                    strokeCol = '#fde047';
+                    glowCol = '#f59e0b';
+                } else if (neonMode === 'white_clean') {
+                    strokeCol = '#ffffff';
+                    glowCol = 'rgba(255,255,255,0.4)';
+                }
+
+                ctx.shadowColor = glowCol;
+                ctx.shadowBlur = 28;
+                ctx.strokeStyle = strokeCol;
+                ctx.lineWidth = 10;
+                ctx.beginPath();
+                ctx.roundRect(boxX, boxY, boxW, boxH, radius);
+                ctx.stroke();
+
+                // Inner core bright line
+                ctx.shadowBlur = 8;
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // 3. Logo Atas
+            const topScale = parseInt(document.getElementById('top-logo-scale').value, 10) / 100;
+            const topYPct = parseInt(document.getElementById('top-logo-y').value, 10);
+            document.getElementById('top-scale-val').textContent = `${Math.round(topScale * 100)}%`;
+            document.getElementById('top-y-val').textContent = `${topYPct}%`;
+
+            const topCenterY = (topYPct / 100) * H;
+            if (state.topLogoProcessed) {
+                const maxW = 680 * topScale;
+                const ratio = state.topLogoProcessed.height / state.topLogoProcessed.width;
+                const drawW = maxW;
+                const drawH = drawW * ratio;
+                ctx.drawImage(state.topLogoProcessed, (W - drawW) / 2, topCenterY - drawH / 2, drawW, drawH);
+            } else {
+                drawDefaultTopLogo(ctx, W / 2, topCenterY, topScale);
+            }
+
+            // 4. Ikon Maskot Bawah Kiri
+            const botScale = parseInt(document.getElementById('bot-icon-scale').value, 10) / 100;
+            const botYPct = parseInt(document.getElementById('bot-icon-y').value, 10);
+            document.getElementById('bot-scale-val').textContent = `${Math.round(botScale * 100)}%`;
+            document.getElementById('bot-y-val').textContent = `${botYPct}%`;
+
+            const botCenterX = 195;
+            const botCenterY = (botYPct / 100) * H;
+            if (state.bottomIconProcessed) {
+                const targetW = 240 * botScale;
+                const ratio = state.bottomIconProcessed.height / state.bottomIconProcessed.width;
+                const drawW = targetW;
+                const drawH = drawW * ratio;
+                ctx.drawImage(state.bottomIconProcessed, botCenterX - drawW / 2, botCenterY - drawH / 2, drawW, drawH);
+            } else {
+                drawDefaultMascotIcon(ctx, botCenterX, botCenterY, botScale);
+            }
+
+            // 5. Teks Bawah di Sebelah Kanan Ikon
+            const rawText = document.getElementById('bottom-text-input').value;
+            const fontSize = parseInt(document.getElementById('bottom-text-size').value, 10);
+            const textColor = document.getElementById('bottom-text-color').value;
+            const strokeColor = document.getElementById('bottom-stroke-color').value;
+            document.getElementById('text-size-val').textContent = fontSize;
+
+            if (rawText.trim().length > 0) {
+                const lines = rawText.split('\n');
+                const lineHeight = fontSize * 1.24;
+                const textStartX = 365;
+                const totalTextHeight = lines.length * lineHeight;
+                const firstLineY = botCenterY - (totalTextHeight / 2) + (lineHeight * 0.45);
+
+                ctx.save();
+                ctx.font = `800 ${fontSize}px "Poppins", "Inter", sans-serif`;
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.lineJoin = 'round';
+
+                lines.forEach((line, idx) => {
+                    const y = firstLineY + idx * lineHeight;
+                    ctx.lineWidth = Math.max(4, Math.round(fontSize * 0.14));
+                    ctx.strokeStyle = strokeColor;
+                    ctx.strokeText(line, textStartX, y);
+
+                    ctx.fillStyle = textColor;
+                    ctx.fillText(line, textStartX, y);
+                });
+                ctx.restore();
+            }
+        }
+
+        function downloadOverlayPng() {
+            const canvas = document.getElementById('overlay-canvas');
+            canvas.toBlob(function(blob) {
+                if (!blob) return;
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `overlay-greenscreen-hd-${Date.now()}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+                showToast('Gambar Overlay PNG (1080×1920) berhasil diunduh!');
+            }, 'image/png');
+        }
+
+        function resetOverlayStudio() {
+            state.bgRawImg = null;
+            state.topLogoRawImg = null;
+            state.topLogoProcessed = null;
+            state.bottomIconRawImg = null;
+            state.bottomIconProcessed = null;
+
+            document.getElementById('bg-mode-select').value = 'classic_green';
+            document.getElementById('neon-box-select').value = 'none';
+            document.getElementById('top-logo-scale').value = 100;
+            document.getElementById('top-logo-y').value = 14;
+            document.getElementById('top-logo-clean').value = 'none';
+            document.getElementById('bot-icon-scale').value = 100;
+            document.getElementById('bot-icon-y').value = 90;
+            document.getElementById('bot-icon-clean').value = 'black_crop_text';
+            document.getElementById('bottom-text-input').value = 'Komen request\nkarakter bosq! 🎮';
+            document.getElementById('bottom-text-size').value = 58;
+            document.getElementById('bottom-text-color').value = '#ffffff';
+            document.getElementById('bottom-stroke-color').value = '#0a1f0f';
+
+            renderCanvas();
+            showToast('Studio direset ke pengaturan awal!');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCanvas();
+        });
+    </script>
+</body>
+</html>
