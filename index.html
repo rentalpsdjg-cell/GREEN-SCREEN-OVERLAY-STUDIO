@@ -252,8 +252,16 @@ karakter bosq! 🎮</textarea>
                 <div class="space-y-2.5 pt-1">
                     <button type="button" onclick="downloadOverlayPng()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 via-green-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-zinc-950 font-studio font-extrabold text-xs sm:text-sm tracking-wider shadow-lg shadow-emerald-600/25 transition flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                        <span>UNDUH HASIL OVERLAY (.PNG HD)</span>
+                        <span>UNDUH OVERLAY 9:16 (.PNG HD)</span>
                     </button>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="downloadStandaloneMascotHd(true)" class="py-2.5 px-3 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 font-bold text-[11px] transition">
+                            ⬇ Logo HD Green Screen
+                        </button>
+                        <button type="button" onclick="downloadStandaloneMascotHd(false)" class="py-2.5 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 font-bold text-[11px] transition">
+                            ⬇ Logo HD Transparan
+                        </button>
+                    </div>
                     <p class="text-[11px] text-center text-zinc-400">Siap langsung dipakai sebagai frame/overlay di CapCut, VN, atau Premiere!</p>
                 </div>
             </div>
@@ -327,89 +335,186 @@ karakter bosq! 🎮</textarea>
             ctx.save();
             ctx.translate(centerX, centerY);
             ctx.scale(scale, scale);
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
 
-            // Base merah joystick
-            ctx.fillStyle = '#dc2626';
+            // 1. Dudukan (Base) merah miring klasik arcade joystick
+            ctx.save();
+            ctx.translate(-4, 96);
+            ctx.rotate(-0.08);
+            const baseGrad = ctx.createLinearGradient(-85, -20, 85, 25);
+            baseGrad.addColorStop(0, '#ef4444');
+            baseGrad.addColorStop(0.5, '#dc2626');
+            baseGrad.addColorStop(1, '#991b1b');
+            ctx.fillStyle = baseGrad;
             ctx.strokeStyle = '#09090b';
-            ctx.lineWidth = 7;
+            ctx.lineWidth = 8;
             ctx.beginPath();
-            ctx.ellipse(0, 95, 82, 24, 0, 0, Math.PI * 2);
+            ctx.ellipse(0, 0, 86, 25, 0, 0, Math.PI * 2);
             ctx.fill();
             ctx.stroke();
 
-            // Batang silver joystick
-            ctx.fillStyle = '#e4e4e7';
-            ctx.beginPath();
-            ctx.moveTo(-12, 92);
-            ctx.lineTo(-7, 25);
-            ctx.lineTo(7, 25);
-            ctx.lineTo(12, 92);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-
-            // Tangan kiri & kanan jempol kuning
-            function drawThumbHand(dir) {
-                ctx.save();
-                ctx.scale(dir, 1);
-                ctx.fillStyle = '#facc15';
-                ctx.strokeStyle = '#09090b';
-                ctx.lineWidth = 6;
-                // Kepalan tangan
-                ctx.beginPath();
-                ctx.roundRect(68, -22, 46, 56, 18);
-                ctx.fill();
-                ctx.stroke();
-                // Jempol ke atas
-                ctx.beginPath();
-                ctx.roundRect(72, -52, 22, 38, 11);
-                ctx.fill();
-                ctx.stroke();
-                ctx.restore();
-            }
-            drawThumbHand(-1);
-            drawThumbHand(1);
-
-            // Bola merah kepala maskot
-            const ballGrad = ctx.createRadialGradient(-22, -62, 10, 0, -38, 72);
-            ballGrad.addColorStop(0, '#f87171');
-            ballGrad.addColorStop(0.5, '#dc2626');
-            ballGrad.addColorStop(1, '#7f1d1d');
-            ctx.fillStyle = ballGrad;
-            ctx.beginPath();
-            ctx.arc(0, -38, 68, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-
-            // Kilau bola
-            ctx.fillStyle = 'rgba(255,255,255,0.45)';
-            ctx.beginPath();
-            ctx.ellipse(-28, -74, 16, 9, -0.5, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Mata kartun
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.ellipse(-16, -58, 12, 18, 0.1, 0, Math.PI * 2);
-            ctx.ellipse(12, -60, 12, 18, 0.1, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-
+            // Ring hitam tempat batang joystick menancap
             ctx.fillStyle = '#09090b';
             ctx.beginPath();
-            ctx.arc(-13, -56, 6, 0, Math.PI * 2);
-            ctx.arc(15, -58, 6, 0, Math.PI * 2);
+            ctx.ellipse(-4, -3, 22, 8, 0, 0, Math.PI * 2);
             ctx.fill();
-
-            // Senyum lebar putih
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = '#f87171';
             ctx.beginPath();
-            ctx.moveTo(-42, -32);
-            ctx.quadraticCurveTo(0, -14, 44, -40);
-            ctx.quadraticCurveTo(36, 12, -12, 8);
-            ctx.quadraticCurveTo(-40, 2, -42, -32);
+            ctx.ellipse(-4, -3, 14, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // 2. Batang putih miring joystick (dengan shading abu-abu lembut)
+            const shaftGrad = ctx.createLinearGradient(-20, 30, 18, 95);
+            shaftGrad.addColorStop(0, '#ffffff');
+            shaftGrad.addColorStop(0.7, '#f4f4f5');
+            shaftGrad.addColorStop(1, '#d4d4d8');
+            ctx.fillStyle = shaftGrad;
+            ctx.strokeStyle = '#09090b';
+            ctx.lineWidth = 7.5;
+            ctx.beginPath();
+            ctx.moveTo(-16, 92);
+            ctx.lineTo(1, 24);
+            ctx.lineTo(16, 26);
+            ctx.lineTo(-2, 94);
             ctx.closePath();
             ctx.fill();
+            ctx.stroke();
+
+            // 3. Leher cincin merah kecil di bawah bola
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.ellipse(9, 25, 19, 8, -0.1, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // 4. Tangan jempol kuning ikonik (Kiri & Kanan persis referensi)
+            function drawMascotThumbHand(isRight) {
+                ctx.save();
+                if (isRight) {
+                    ctx.translate(82, 4);
+                    ctx.scale(-1, 1);
+                } else {
+                    ctx.translate(-86, 6);
+                }
+
+                const handGrad = ctx.createLinearGradient(-30, -65, 30, 40);
+                handGrad.addColorStop(0, '#fef08a');
+                handGrad.addColorStop(0.45, '#facc15');
+                handGrad.addColorStop(1, '#eab308');
+                ctx.fillStyle = handGrad;
+                ctx.strokeStyle = '#09090b';
+                ctx.lineWidth = 7;
+
+                // Siluet utama jempol ke atas + kepalan jari
+                ctx.beginPath();
+                ctx.moveTo(-16, -58);
+                ctx.quadraticCurveTo(-8, -64, -3, -46);
+                ctx.lineTo(2, -22);
+                ctx.quadraticCurveTo(22, -26, 25, -12);
+                ctx.quadraticCurveTo(28, -2, 23, 4);
+                ctx.quadraticCurveTo(29, 13, 22, 22);
+                ctx.quadraticCurveTo(27, 32, 16, 38);
+                ctx.quadraticCurveTo(-4, 44, -22, 34);
+                ctx.quadraticCurveTo(-34, 22, -28, -8);
+                ctx.lineTo(-22, -46);
+                ctx.quadraticCurveTo(-21, -55, -16, -58);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // Garis lipatan 3 ruas jari kepalan
+                ctx.lineWidth = 5.5;
+                ctx.beginPath();
+                ctx.moveTo(4, -10);
+                ctx.quadraticCurveTo(15, -11, 22, -8);
+                ctx.moveTo(3, 5);
+                ctx.quadraticCurveTo(15, 4, 22, 7);
+                ctx.moveTo(1, 20);
+                ctx.quadraticCurveTo(13, 19, 19, 22);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+            drawMascotThumbHand(false);
+            drawMascotThumbHand(true);
+
+            // 5. Bola merah kepala maskot HD
+            const ballGrad = ctx.createRadialGradient(-20, -68, 12, 4, -40, 78);
+            ballGrad.addColorStop(0, '#f87171');
+            ballGrad.addColorStop(0.45, '#e11d1d');
+            ballGrad.addColorStop(1, '#991b1b');
+            ctx.fillStyle = ballGrad;
+            ctx.strokeStyle = '#09090b';
+            ctx.lineWidth = 8;
+            ctx.beginPath();
+            ctx.arc(4, -40, 70, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Kilau glossy HD di kiri atas kepala bola
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+            ctx.beginPath();
+            ctx.ellipse(-28, -76, 17, 9, -0.55, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Alis ekspresif di atas mata
+            ctx.strokeStyle = '#09090b';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(-26, -88);
+            ctx.quadraticCurveTo(-12, -96, 1, -90);
+            ctx.moveTo(14, -91);
+            ctx.quadraticCurveTo(26, -96, 36, -88);
+            ctx.stroke();
+
+            // 6. Sepasang Mata Kartun Lonjong Besar
+            ctx.fillStyle = '#ffffff';
+            ctx.lineWidth = 6.5;
+            ctx.beginPath();
+            ctx.ellipse(-12, -64, 13, 21, 0.08, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.ellipse(17, -66, 13, 21, 0.08, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Pupil mata hitam & kilau mata
+            ctx.fillStyle = '#09090b';
+            ctx.beginPath();
+            ctx.ellipse(-10, -61, 6.5, 11, 0.08, 0, Math.PI * 2);
+            ctx.ellipse(19, -63, 6.5, 11, 0.08, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(-13, -67, 2.8, 0, Math.PI * 2);
+            ctx.arc(16, -69, 2.8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 7. Senyum Lebar Menyeringai Khas Maskot
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#09090b';
+            ctx.lineWidth = 6.5;
+            ctx.beginPath();
+            ctx.moveTo(-44, -36);
+            ctx.quadraticCurveTo(5, -18, 52, -48);
+            ctx.quadraticCurveTo(46, 12, -12, 8);
+            ctx.quadraticCurveTo(-42, 2, -44, -36);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Garis sudut pipi senyum di ujung kanan & kiri
+            ctx.lineWidth = 5.5;
+            ctx.beginPath();
+            ctx.moveTo(46, -54);
+            ctx.quadraticCurveTo(55, -48, 57, -38);
+            ctx.moveTo(-48, -42);
+            ctx.quadraticCurveTo(-45, -34, -40, -30);
             ctx.stroke();
 
             ctx.restore();
@@ -639,28 +744,45 @@ karakter bosq! 🎮</textarea>
             }, 'image/png');
         }
 
-        function resetOverlayStudio() {
-            state.bgRawImg = null;
-            state.topLogoRawImg = null;
-            state.topLogoProcessed = null;
-            state.bottomIconRawImg = null;
-            state.bottomIconProcessed = null;
+        // Fungsi Unduh Logo Maskot HD Terpisah (1080x1080) Green Screen / Transparan
+        function downloadStandaloneMascotHd(withGreenScreen) {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 1080;
+            tempCanvas.height = 1080;
+            const tctx = tempCanvas.getContext('2d');
 
-            document.getElementById('bg-mode-select').value = 'classic_green';
-            document.getElementById('neon-box-select').value = 'none';
-            document.getElementById('top-logo-scale').value = 100;
-            document.getElementById('top-logo-y').value = 14;
-            document.getElementById('top-logo-clean').value = 'none';
-            document.getElementById('bot-icon-scale').value = 100;
-            document.getElementById('bot-icon-y').value = 90;
-            document.getElementById('bot-icon-clean').value = 'black_crop_text';
-            document.getElementById('bottom-text-input').value = 'Komen request\nkarakter bosq! 🎮';
-            document.getElementById('bottom-text-size').value = 58;
-            document.getElementById('bottom-text-color').value = '#ffffff';
-            document.getElementById('bottom-stroke-color').value = '#0a1f0f';
+            if (withGreenScreen) {
+                tctx.fillStyle = '#00b140';
+                tctx.fillRect(0, 0, 1080, 1080);
+            }
 
-            renderCanvas();
-            showToast('Studio direset ke pengaturan awal!');
+            if (state.bottomIconProcessed) {
+                const maxDim = 820;
+                const ratio = state.bottomIconProcessed.height / state.bottomIconProcessed.width;
+                const w = ratio > 1 ? maxDim / ratio : maxDim;
+                const h = w * ratio;
+                tctx.drawImage(state.bottomIconProcessed, (1080 - w) / 2, (1080 - h) / 2, w, h);
+            } else {
+                // Gambar maskot HD skala besar (3.4x) di tengah kanvas 1080x1080
+                drawDefaultMascotIcon(tctx, 540, 560, 3.45);
+            }
+
+            tempCanvas.toBlob(function(blob) {
+                if (!blob) return;
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = withGreenScreen
+                    ? `logo-maskot-greenscreen-hd-${Date.now()}.png`
+                    : `logo-maskot-transparan-hd-${Date.now()}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+                showToast(withGreenScreen
+                    ? 'Logo HD Green Screen (1080×1080) berhasil diunduh!'
+                    : 'Logo HD Transparan (1080×1080) berhasil diunduh!');
+            }, 'image/png');
         }
 
         window.addEventListener('DOMContentLoaded', () => {
